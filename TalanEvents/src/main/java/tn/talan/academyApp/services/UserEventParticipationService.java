@@ -31,6 +31,9 @@ public interface UserEventParticipationService {
 	public List<EventDto> topThreePresenceParEvenement() ;
 	
 	public EventDto topEventTauxParicipation(List<EventDto> allEvents) ;
+	
+	public void notifyEventParticipators() throws GeneralSecurityException, MessagingException, ParseException;
+
 
 	
 		
