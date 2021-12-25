@@ -20,6 +20,7 @@ import tn.talan.academyApp.security.services.UserDetailsServiceImpl;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableScheduling
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -27,6 +28,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
+	
+	@Autowired
+	public UserEventParticipationService userEventParticipationService;
 
 	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -58,6 +62,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		        .anyRequest().authenticated();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+	}
+	
+	//calculate every 1 min
+   	@Scheduled(cron = "*/30 * * * * *",zone="Africa/Tunis")
+	public void ScrapEveryDay() throws GeneralSecurityException, MessagingException, ParseException {
+	userEventParticipationService.notifyEventParticipators();
 	}
 
 }
