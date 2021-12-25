@@ -336,5 +336,33 @@ public class UserEventParticipationServiceImpl implements UserEventParticipation
 		return topThree;
 
 	}
+	@Override
+	public void notifyEventParticipators() throws GeneralSecurityException, MessagingException, ParseException {
+	List<EventDto> allEvents = eventService.findAllEvents();
+
+	Calendar cal = Calendar.getInstance();
+	cal.add(Calendar.HOUR, 25);
+	Date date = cal.getTime();
+
+	SimpleDateFormat sdf = new SimpleDateFormat("EEEE,MMMM d,yyyy h:mm,a", Locale.ENGLISH);
+	sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	String formattedDate = sdf.format(date);
+
+	for (EventDto eventDto : allEvents) {
+
+		String formattedDateEvent = sdf.format(eventDto.getDateDebutEvent());
+
+		if (formattedDate.equals(formattedDateEvent)) {
+			List<UserDto> usersRelatedEvent = findUserParticipated(eventDto.getEventId());
+			for (UserDto userDto : usersRelatedEvent) {
+
+				eventService.sendMail(userDto.getEmail(), "J-1 event" + eventDto.getNameEvent(),
+						"Pack your bags and let's gooo!");
+			}
+		}
+
+	}
+
+	}
 
 }
